@@ -3,17 +3,15 @@ package logger
 import (
 	"log/slog"
 	"os"
-
-	"github.com/wongyx/phishing-url-scanner/internal/config"
 )
 
-func NewLogger(cfg *config.App) *slog.Logger {
+func NewLogger(env string) *slog.Logger {
 	opts := &slog.HandlerOptions{
 		AddSource: true,
 		Level:     slog.LevelInfo,
 	}
 
-	if cfg.Env == "development" {
+	if env == "development" {
 		opts.Level = slog.LevelDebug
 		return slog.New(slog.NewTextHandler(os.Stdout, opts))
 	}
