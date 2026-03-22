@@ -35,7 +35,7 @@ func main() {
 		checker.WithLogger(logger),
 	)
 
-	result, err := ch.Scan(context.Background(), "https://www.google.com")
+	result, err := ch.Scan(context.Background(), "https://pub-51656ae3d0ef4f2ba59cdfc6830c8098.r2.dev/meeting.htm")
 	if err != nil {
 		slog.Error("scan failed", "error", err)
 		os.Exit(1)
@@ -45,6 +45,8 @@ func main() {
 		"url", result.URL,
 		"domain", result.Domain,
 		"status", result.Status,
+		"virustotal_score", *result.VirusTotalScore,
+		"virustotal_link", *result.VirusTotalLink,
 		"safe_browsing_hit", *result.SafeBrowsingHit,
 		"threat_type", result.ThreatTypes,
 		"domain_age_days", result.DomainAgeDays,
