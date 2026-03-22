@@ -11,10 +11,11 @@ import (
 	"github.com/lib/pq"
 	"github.com/wongyx/phishing-url-scanner/internal/models"
 	"golang.org/x/net/publicsuffix"
+	"golang.org/x/time/rate"
 )
 
 type Checker struct {
-	// vtClient    *VirusTotalClient
+	vtClient    *VirusTotalClient
 	sbClient    *SafeBrowsingClient
 	whoisClient *WHOISClient
 	scanTimeout time.Duration
@@ -25,9 +26,17 @@ type Option func(*Checker)
 
 func WithHTTPClient(c *http.Client) Option {
 	return func(ch *Checker) {
-		// ch.vtClient.httpClient = c
+		ch.vtClient.httpClient = c
 		ch.sbClient.httpClient = c
 		ch.whoisClient.httpClient = c
+	}
+}
+
+// WithVirusTotalRateLimit overrides the default VirusTotal rate limit (4 req/min, free tier).
+// Use this when on a paid plan, e.g. WithVirusTotalRateLimit(rate.Every(60*time.Millisecond), 1000) for 1000 req/min.
+func WithVirusTotalRateLimit(r rate.Limit, burst int) Option {
+	return func(ch *Checker) {
+		WithRateLimit(r, burst)(ch.vtClient)
 	}
 }
 
@@ -46,10 +55,10 @@ func WithLogger(l *slog.Logger) Option {
 func NewChecker(vtKey, sbKey string, opts ...Option) *Checker {
 	defaultClient := &http.Client{Timeout: 30 * time.Second}
 	ch := &Checker{
-		// vtClient:    NewVirusTotalClient(vtKey, defaultClient),
+		vtClient:    NewVirusTotalClient(vtKey, defaultClient),
 		sbClient:    NewSafeBrowsingClient(sbKey, defaultClient),
 		whoisClient: NewWHOISClient(defaultClient),
-		scanTimeout: 45 * time.Second,
+		scanTimeout: 180 * time.Second,
 		logger:      slog.Default(),
 	}
 	for _, opt := range opts {
@@ -84,7 +93,15 @@ func (ch *Checker) Scan(ctx context.Context, rawURL string) (*models.Scan, error
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		// TODO: implement when vtClient is available
+		result, err := ch.vtClient.Check(ctx, rawURL)
+		if err != nil {
+			ch.logger.Warn("virustotal check failed", "url", rawURL, "error", err)
+			return
+		}
+		mu.Lock()
+		scan.VirusTotalScore = result.VirusTotalScore
+		scan.VirusTotalLink = result.VirusTotalLink
+		mu.Unlock()
 	}()
 
 	// Safe Browsing check
