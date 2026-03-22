@@ -47,7 +47,6 @@ func NewVirusTotalClient(apiKey string, httpClient *http.Client, opts ...VirusTo
 	return vt
 }
 
-
 type VirusTotalScanResponse struct {
 	Data ScanData `json:"data"`
 }
