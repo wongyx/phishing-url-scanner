@@ -45,14 +45,17 @@ func main() {
 	router := api.NewRouter(handler)
 
 	srv := &http.Server{
-		Addr:    ":" + cfg.App.Port,
-		Handler: router,
+		Addr:         ":" + cfg.App.Port,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: cfg.App.ScanTimeout + 5*time.Second, // scan timeout + buffer for response writing
+		IdleTimeout:  120 * time.Second,
 	}
 
 	go func() {
 		slog.Info("server starting", "port", cfg.App.Port)
-		if listenErr := srv.ListenAndServe(); listenErr != nil && !errors.Is(err, http.ErrServerClosed) {
-			slog.Error("server failed", "error", err)
+		if listenErr := srv.ListenAndServe(); listenErr != nil && !errors.Is(listenErr, http.ErrServerClosed) {
+			slog.Error("server failed", "error", listenErr)
 			os.Exit(1)
 		}
 	}()
@@ -67,7 +70,7 @@ func main() {
 	defer cancel()
 
 	if shutdownErr := srv.Shutdown(ctx); shutdownErr != nil {
-		slog.Error("server forced to shutdown", "error", err)
+		slog.Error("server forced to shutdown", "error", shutdownErr)
 		os.Exit(1)
 	}
 
