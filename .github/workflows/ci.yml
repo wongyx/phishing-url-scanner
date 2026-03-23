@@ -44,3 +44,13 @@ jobs:
 
       - name: Run tests
         run: go test -race ./...
+
+  ci:
+    name: CI
+    if: ${{ always() }}
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all jobs passed
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
