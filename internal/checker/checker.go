@@ -93,7 +93,12 @@ func (ch *Checker) Scan(ctx context.Context, rawURL string) (*models.Scan, error
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		result, err := ch.vtClient.Check(ctx, rawURL)
+		var result *VirusTotalResult
+		err := retryWithBackoff(ctx, 3, func() error {
+			var e error
+			result, e = ch.vtClient.Check(ctx, rawURL)
+			return e
+		})
 		if err != nil {
 			ch.logger.Warn("virustotal check failed", "url", rawURL, "error", err)
 			return
@@ -108,9 +113,15 @@ func (ch *Checker) Scan(ctx context.Context, rawURL string) (*models.Scan, error
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		result, err := ch.sbClient.Check(ctx, rawURL)
+		var result *SafeBrowsingResult
+		err := retryWithBackoff(ctx, 3, func() error {
+			var e error
+			result, e = ch.sbClient.Check(ctx, rawURL)
+			return e
+		})
 		if err != nil {
 			ch.logger.Warn("safebrowsing check failed", "url", rawURL, "error", err)
+			return
 		}
 		mu.Lock()
 		scan.SafeBrowsingHit = result.SafeBrowsingHit
@@ -122,7 +133,12 @@ func (ch *Checker) Scan(ctx context.Context, rawURL string) (*models.Scan, error
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		result, err := ch.whoisClient.Check(ctx, domain)
+		var result *DomainAgeResult
+		err := retryWithBackoff(ctx, 3, func() error {
+			var e error
+			result, e = ch.whoisClient.Check(ctx, domain)
+			return e
+		})
 		if err != nil {
 			ch.logger.Warn("rdap check failed", "domain", domain, "error", err)
 			return
