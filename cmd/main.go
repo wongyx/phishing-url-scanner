@@ -51,7 +51,7 @@ func main() {
 
 	go func() {
 		slog.Info("server starting", "port", cfg.App.Port)
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if listenErr := srv.ListenAndServe(); listenErr != nil && !errors.Is(err, http.ErrServerClosed) {
 			slog.Error("server failed", "error", err)
 			os.Exit(1)
 		}
@@ -66,7 +66,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if shutdownErr := srv.Shutdown(ctx); shutdownErr != nil {
 		slog.Error("server forced to shutdown", "error", err)
 		os.Exit(1)
 	}
