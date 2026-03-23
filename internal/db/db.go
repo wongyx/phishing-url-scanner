@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/wongyx/phishing-url-scanner/internal/config"
@@ -12,7 +13,13 @@ import (
 )
 
 func Connect(cfg *config.DB) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=disable", cfg.User, cfg.Password, cfg.Host, cfg.Name)
+	dsn := (&url.URL{
+		Scheme:   "postgres",
+		User:     url.UserPassword(cfg.User, cfg.Password),
+		Host:     cfg.Host + ":5432",
+		Path:     cfg.Name,
+		RawQuery: "sslmode=disable",
+	}).String()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})

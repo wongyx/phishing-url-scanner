@@ -14,7 +14,7 @@ import (
 // newTestVTClient creates a VirusTotalClient pointing at the given test server
 // with rate limiting disabled so tests run immediately.
 func newTestVTClient(srv *httptest.Server) *VirusTotalClient {
-	return NewVirusTotalClient("test-key", redirectHTTPClient(srv), WithRateLimit(rate.Inf, 1000))
+	return NewVirusTotalClient("test-key", redirectHTTPClient(srv), WithRateLimit(rate.Inf, 1000), WithPollInterval(0))
 }
 
 func TestVirusTotalClient_CheckExisting_Found(t *testing.T) {

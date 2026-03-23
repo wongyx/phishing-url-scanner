@@ -22,9 +22,10 @@ const (
 )
 
 type VirusTotalClient struct {
-	httpClient *http.Client
-	apiKey     string
-	limiter    *rate.Limiter
+	httpClient   *http.Client
+	apiKey       string
+	limiter      *rate.Limiter
+	pollInterval time.Duration
 }
 
 type VirusTotalOption func(*VirusTotalClient)
@@ -35,11 +36,18 @@ func WithRateLimit(r rate.Limit, burst int) VirusTotalOption {
 	}
 }
 
+func WithPollInterval(d time.Duration) VirusTotalOption {
+	return func(vt *VirusTotalClient) {
+		vt.pollInterval = d
+	}
+}
+
 func NewVirusTotalClient(apiKey string, httpClient *http.Client, opts ...VirusTotalOption) *VirusTotalClient {
 	vt := &VirusTotalClient{
-		apiKey:     apiKey,
-		httpClient: httpClient,
-		limiter:    rate.NewLimiter(rate.Every(15*time.Second), 4),
+		apiKey:       apiKey,
+		httpClient:   httpClient,
+		limiter:      rate.NewLimiter(rate.Every(15*time.Second), 4),
+		pollInterval: 15 * time.Second,
 	}
 	for _, opt := range opts {
 		opt(vt)
@@ -187,6 +195,14 @@ func (vt *VirusTotalClient) pollAnalysis(ctx context.Context, id string) (*Virus
 	apiURL := virusTotalAnalysisURL + id
 
 	for i := 0; i < virusTotalMaxPolls; i++ {
+		if i > 0 && vt.pollInterval > 0 {
+			select {
+			case <-time.After(vt.pollInterval):
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			}
+		}
+
 		if err := vt.limiter.Wait(ctx); err != nil {
 			return nil, fmt.Errorf("virustotal: rate limiter: %w", err)
 		}
@@ -202,9 +218,17 @@ func (vt *VirusTotalClient) pollAnalysis(ctx context.Context, id string) (*Virus
 			return nil, fmt.Errorf("virustotal: request for %s: %w", apiURL, err)
 		}
 
+		statusCode := resp.StatusCode
 		var vtAnalysisResponse VirusTotalAnalysisResponse
 		err = json.NewDecoder(resp.Body).Decode(&vtAnalysisResponse)
 		_ = resp.Body.Close()
+
+		if statusCode == http.StatusTooManyRequests {
+			return nil, &ErrRateLimited{API: "virustotal", RetryAfter: resp.Header.Get("Retry-After")}
+		}
+		if statusCode != http.StatusOK {
+			return nil, &ErrAPIUnavailable{API: "virustotal", Status: statusCode}
+		}
 		if err != nil {
 			return nil, fmt.Errorf("virustotal: decode response for %s: %w", apiURL, err)
 		}
