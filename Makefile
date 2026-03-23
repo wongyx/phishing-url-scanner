@@ -10,6 +10,10 @@ lint: ## Run linters
 		go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 	golangci-lint run
 
+.PHONY: test
+test: ## Run all tests with race detector
+	go test -race ./...
+
 .PHONY: build
 build: ## Build the Go binary
 	go build -o bin/server ./cmd
@@ -17,3 +21,6 @@ build: ## Build the Go binary
 .PHONY: run
 run: ## Run the server locally
 	go run ./cmd
+
+.PHONY: ci
+ci: lint test ## Run lint and tests (CI pipeline)
