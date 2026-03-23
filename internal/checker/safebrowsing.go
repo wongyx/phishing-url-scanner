@@ -95,8 +95,11 @@ func (sb *SafeBrowsingClient) Check(ctx context.Context, rawURL string) (*SafeBr
 		_ = resp.Body.Close()
 	}()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, &ErrRateLimited{API: "safebrowsing", RetryAfter: resp.Header.Get("Retry-After")}
+	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("safebrowsing: unexpected status %d for %s", resp.StatusCode, rawURL)
+		return nil, &ErrAPIUnavailable{API: "safebrowsing", Status: resp.StatusCode}
 	}
 
 	var sbResp SafeBrowsingResponse

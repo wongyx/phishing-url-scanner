@@ -56,8 +56,11 @@ func (w *WHOISClient) Check(ctx context.Context, domain string) (*DomainAgeResul
 		_ = resp.Body.Close()
 	}()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, &ErrRateLimited{API: "rdap", RetryAfter: resp.Header.Get("Retry-After")}
+	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("rdap: unexpected status %d for %s", resp.StatusCode, domain)
+		return nil, &ErrAPIUnavailable{API: "rdap", Status: resp.StatusCode}
 	}
 
 	var rdap rdapResponse

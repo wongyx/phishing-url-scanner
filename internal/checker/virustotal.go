@@ -127,8 +127,11 @@ func (vt *VirusTotalClient) checkExisting(ctx context.Context, rawURL string) (*
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, nil
 	}
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, &ErrRateLimited{API: "virustotal", RetryAfter: resp.Header.Get("Retry-After")}
+	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("virustotal: unexpected status %d for %s", resp.StatusCode, apiURL)
+		return nil, &ErrAPIUnavailable{API: "virustotal", Status: resp.StatusCode}
 	}
 
 	var urlResp VirusTotalURLResponse
@@ -165,8 +168,11 @@ func (vt *VirusTotalClient) submitScan(ctx context.Context, rawURL string) (stri
 		_ = resp.Body.Close()
 	}()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return "", &ErrRateLimited{API: "virustotal", RetryAfter: resp.Header.Get("Retry-After")}
+	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("virustotal: unexpected status %d for %s", resp.StatusCode, rawURL)
+		return "", &ErrAPIUnavailable{API: "virustotal", Status: resp.StatusCode}
 	}
 
 	var vtScanResp VirusTotalScanResponse
