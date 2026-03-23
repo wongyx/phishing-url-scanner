@@ -24,5 +24,3 @@ run: ## Run the server locally
 
 .PHONY: ci
 ci: lint test ## Run lint and tests (CI pipeline)
-
-# Test
