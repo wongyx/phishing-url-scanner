@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phishing URL Scanner</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Phishing URL Scanner</h1>
+      <p class="subtitle">Check any URL against VirusTotal, Google Safe Browsing, and domain age signals.</p>
+    </header>
+
+    <section class="scan-section">
+      <form id="scan-form">
+        <div class="input-row">
+          <input
+            id="url-input"
+            type="url"
+            placeholder="https://example.com"
+            autocomplete="off"
+            spellcheck="false"
+            required
+          />
+          <button type="submit" id="submit-btn">Check URL</button>
+        </div>
+        <p id="form-error" class="form-error" hidden></p>
+      </form>
+    </section>
+
+    <section id="result-section" hidden>
+      <h2>Scan Result</h2>
+      <div id="result-panel" class="result-panel">
+        <!-- Populated by app.js -->
+      </div>
+    </section>
+
+    <section class="history-section">
+      <div class="history-header">
+        <h2>Recent Scans</h2>
+        <div class="filter-row">
+          <label for="status-filter">Filter:</label>
+          <select id="status-filter">
+            <option value="">All</option>
+            <option value="safe">Safe</option>
+            <option value="suspicious">Suspicious</option>
+            <option value="malicious">Malicious</option>
+            <option value="unknown">Unknown</option>
+            <option value="error">Error</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="history-table">
+          <thead>
+            <tr>
+              <th>URL</th>
+              <th>Status</th>
+              <th>VirusTotal</th>
+              <th>Safe Browsing</th>
+              <th>Domain Age</th>
+              <th>Scanned</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <tr id="history-empty">
+              <td colspan="7" class="empty-state">No scans yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="pagination" class="pagination" hidden>
+        <button id="prev-btn" disabled>Previous</button>
+        <span id="page-info"></span>
+        <button id="next-btn">Next</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

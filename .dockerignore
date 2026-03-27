@@ -1,0 +1,20 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.github
+
+# Dev tooling
+.golangci.yml
+
+# Test artifacts
+**/*_test.go
+**/*.test
+
+# Docs and metadata
+README.md
+Makefile
