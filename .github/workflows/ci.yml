@@ -54,10 +54,24 @@ jobs:
       - name: Run tests
         run: go test -race ./...
 
+  semgrep:
+    name: Semgrep SAST
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config "p/golang" --sarif-output=semgrep.sarif . || 'true'
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+
   ci:
     name: CI
     if: ${{ always() }}
-    needs: [lint, test]
+    needs: [lint, test, semgrep]
     runs-on: ubuntu-latest
     steps:
       - name: Check all jobs passed
