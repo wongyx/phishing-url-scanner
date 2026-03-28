@@ -64,7 +64,7 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep scan --config "p/golang" --sarif-output=semgrep.sarif . || true
+      - run: semgrep scan --config "p/golang" --sarif-output=semgrep.sarif --severity ERROR .
       - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
