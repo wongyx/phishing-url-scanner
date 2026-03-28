@@ -22,6 +22,7 @@ jobs:
               - "go.mod"
               - "go.sum"
               - ".golangci.yml"
+              - ".github/workflows/ci.yml"
 
   lint:
     name: Lint
@@ -63,7 +64,7 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep scan --config "p/golang" --sarif-output=semgrep.sarif . || 'true'
+      - run: semgrep scan --config "p/golang" --sarif-output=semgrep.sarif . || true
       - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
