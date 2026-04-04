@@ -25,3 +25,6 @@ coverage.html
 # OS
 .DS_Store
 Thumbs.db
+
+# Kubernetes
+k8s/secret.yml
