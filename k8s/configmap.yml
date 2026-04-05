@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: phishing-url-scanner
+data:
+  DB_HOST: postgres-service
+  DB_NAME: phishingchecker
+  APP_ENV: development
+  PORT: "8080"
