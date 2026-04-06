@@ -8,6 +8,11 @@ spec:
   selector:
     matchLabels:
       app: scanner-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -73,3 +78,10 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 10
             failureThreshold: 3
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
