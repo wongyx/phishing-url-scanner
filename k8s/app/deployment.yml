@@ -4,7 +4,6 @@ metadata:
   name: scanner-app
   namespace: phishing-url-scanner
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: scanner-app
