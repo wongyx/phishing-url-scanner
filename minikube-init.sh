@@ -29,6 +29,7 @@ kubectl apply -f k8s/secret.yml
 kubectl apply -f k8s/postgres/
 kubectl apply -f k8s/ingress.yml
 envsubst < k8s/app/deployment.yml | kubectl apply -f -
+kubectl apply -f k8s/app/hpa.yml
 kubectl apply -f k8s/app/service.yml
 
 echo "Updating /etc/hosts..."
