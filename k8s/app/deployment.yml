@@ -17,8 +17,21 @@ spec:
       labels:
         app: scanner-app
     spec:
+      serviceAccountName: app-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: scanner-app
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           image: wongyx/phishing-url-scanner:${IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           ports:
