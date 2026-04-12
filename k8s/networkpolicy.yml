@@ -16,7 +16,10 @@ spec:
             app: ingress-nginx
   egress:
     - to:
-      - podSelector:
+      - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgres
+        podSelector:
           matchLabels:
             app: postgres
     - to:
