@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
-  namespace: phishing-url-scanner
+  namespace: postgres
 spec:
   selector:
     app: postgres

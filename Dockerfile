@@ -1,17 +1,17 @@
 FROM golang:1.25-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod download && go mod verify
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -trimpath \
+    -ldflags="-s w -buildid=" \
+    -o server ./cmd/main.go
 
-FROM alpine:3.21
-RUN apk --no-cache add ca-certificates \
-    && addgroup -S appgroup \
-    && adduser -S appuser -G appgroup
+FROM gcr.io/distroless/static-debian12
 WORKDIR /app
-COPY --chown=appuser:appgroup --from=builder /app/server .
-COPY --chown=appuser:appgroup --from=builder /app/static ./static
-USER appuser
+COPY --chown=1001:1001 --from=builder /app/server .
+COPY --chown=1001:1001 --from=builder /app/static ./static
+USER 1001:1001
 EXPOSE 8080
 CMD ["./server"]

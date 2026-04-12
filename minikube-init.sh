@@ -26,11 +26,17 @@ echo "Applying Kubernetes manifests..."
 kubectl apply -f k8s/namespace.yml
 kubectl apply -f k8s/configmap.yml
 kubectl apply -f k8s/secret.yml
-kubectl apply -f k8s/postgres/
+kubectl apply -f k8s/postgres/namespace.yml
+kubectl apply -f k8s/postgres/configmap.yml
+kubectl apply -f k8s/postgres/secret.yml
+kubectl apply -f k8s/postgres/statefulset.yml
+kubectl apply -f k8s/postgres/service.yml
 kubectl apply -f k8s/ingress.yml
+kubectl apply -f k8s/serviceaccount.yml
 envsubst < k8s/app/deployment.yml | kubectl apply -f -
 kubectl apply -f k8s/app/hpa.yml
 kubectl apply -f k8s/app/service.yml
+kubectl apply -f k8s/networkpolicy.yml
 
 echo "Updating /etc/hosts..."
 sudo sed -i '/myapp.local/d' /etc/hosts
