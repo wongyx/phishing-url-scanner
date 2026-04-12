@@ -27,4 +27,4 @@ coverage.html
 Thumbs.db
 
 # Kubernetes
-k8s/secret.yml
+secret.yml
