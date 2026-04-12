@@ -14,6 +14,7 @@ spec:
       labels:
         app: postgres
     spec:
+      serviceAccountName: postgres-sa
       containers:
         - name: postgres
           image: postgres:16-alpine
@@ -23,17 +24,17 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 configMapKeyRef:
-                  name: db-config
+                  name: postgres-config
                   key: DB_NAME
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
+                  name: postgres-secret
                   key: DB_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-secret
+                  name: postgres-secret
                   key: DB_PASSWORD
           volumeMounts:
             - name: postgres-storage
