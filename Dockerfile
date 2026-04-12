@@ -5,7 +5,7 @@ RUN go mod download && go mod verify
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -trimpath \
-    -ldflags="-s w -buildid=" \
+    -ldflags="-s -w -buildid=" \
     -o server ./cmd/main.go
 
 FROM gcr.io/distroless/static-debian12
