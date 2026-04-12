@@ -4,7 +4,7 @@ metadata:
   name: app-config
   namespace: phishing-url-scanner
 data:
-  DB_HOST: postgres-service
+  DB_HOST: postgres-service.postgres.svc.cluster.local
   DB_NAME: phishingchecker
   APP_ENV: development
   PORT: "8080"
