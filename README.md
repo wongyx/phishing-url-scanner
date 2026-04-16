@@ -2,6 +2,10 @@
 
 An application built in Golang that scans URLs for phishing indicators. It accepts a URL, analyses it against multiple detection sources, and returns a verdict. Results are persisted in a Postgres database.
 
+Write-up series documenting my learning journey and decisions made along the way:\
+[Part 1 – Docker & Kubernetes](https://blog.wongyx.com/docker-kubernetes-security-part-1-building-and-securing-a-phishing-url-scanner-locally)
+<!--Part 2 – Deploying on AWS EKS-->
+
 ## Tech Stack
 
 - **Golang** — Gin web framework, GORM for database access
