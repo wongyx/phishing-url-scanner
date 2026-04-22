@@ -28,3 +28,11 @@ Thumbs.db
 
 # Kubernetes
 secret.yml
+
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+*.tfvars
+!terraform.tfvars.example
