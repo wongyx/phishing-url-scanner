@@ -5,7 +5,7 @@ data "aws_availability_zones" "available" {
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
-  enable_dns_hostnames = true 
+  enable_dns_hostnames = true
   tags = {
     Name = "${var.project_name}-vpc"
   }
@@ -30,7 +30,7 @@ resource "aws_subnet" "public" {
   tags = {
     Name = "${var.project_name}-public-subnet-${count.index + 1}"
 
-    "kubernetes.io/role/elb"                      = "1"
+    "kubernetes.io/role/elb"                    = "1"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
@@ -44,7 +44,7 @@ resource "aws_subnet" "private" {
   tags = {
     Name = "${var.project_name}-private-subnet-${count.index + 1}"
 
-    "kubernetes.io/role/internal-elb"             = "1"
+    "kubernetes.io/role/internal-elb"           = "1"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
