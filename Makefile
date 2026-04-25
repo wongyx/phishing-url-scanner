@@ -9,6 +9,7 @@ lint: ## Run linters
 	@golangci-lint --version 2>/dev/null | grep -q $(GOLANGCI_LINT_VERSION) || \
 		go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 	golangci-lint run
+	terraform fmt -check -recursive
 
 .PHONY: test
 test: ## Run all tests with race detector
