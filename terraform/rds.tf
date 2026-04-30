@@ -35,10 +35,10 @@ resource "aws_db_instance" "main" {
   engine_version       = "16"
   parameter_group_name = aws_db_parameter_group.postgres16.name
 
-  instance_class        = "db.t3.micro"
-  allocated_storage     = 20
-  storage_type          = "gp3"
-  storage_encrypted     = true
+  instance_class    = "db.t3.micro"
+  allocated_storage = 20
+  storage_type      = "gp3"
+  storage_encrypted = true
 
   username = local.db_username
   password = random_password.db.result
