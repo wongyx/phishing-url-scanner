@@ -23,7 +23,7 @@ output "nat_gateway_public_ip" {
   value       = aws_eip.nat.public_ip
 }
 
-output "cluster_name" {
+output "eks_cluster_name" {
   description = "EKS cluster name"
   value       = aws_eks_cluster.main.name
 }
@@ -57,4 +57,19 @@ output "oidc_provider_url" {
 output "node_role_arn" {
   description = "ARN of the IAM role attached to worker nodes"
   value       = aws_iam_role.eks_node.arn
+}
+
+output "alb_controller_role_arn" {
+  description = "ARN of the IAM role attached to ALB controller"
+  value       = aws_iam_role.alb_controller.arn
+}
+
+output "eso_role_arn" {
+  description = "ARN of the IAM role attached to ESO"
+  value       = aws_iam_role.eso.arn
+}
+
+output "rds_endpoint" {
+  description = "Address of the RDS instance"
+  value       = aws_db_instance.main.address
 }
