@@ -104,7 +104,7 @@ resource "aws_eks_addon" "coredns" {
   addon_version = data.aws_eks_addon_version.latest["coredns"].version
 
   resolve_conflicts_on_update = "OVERWRITE"
-  depends_on                  = [aws_eks_node_group.main]
+  depends_on                  = [aws_eks_node_group.main, aws_eks_addon.vpc_cni]
 }
 
 resource "aws_eks_addon" "kube_proxy" {
