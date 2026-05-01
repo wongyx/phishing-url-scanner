@@ -6,6 +6,9 @@ data "aws_eks_addon_version" "latest" {
   most_recent        = true
 }
 
+#trivy:ignore:AVD-AWS-0039 - learning project, AWS-managed etcd encryption is sufficient
+#trivy:ignore:AVD-AWS-0040 - learning project so I have no vpn, public access needed for kubectl from local machine
+#trivy:ignore:AVD-AWS-0041 - learning project, hard to track internet provider IP range, risk is minimal as cluster is only running when I need it
 resource "aws_eks_cluster" "main" {
   name    = var.cluster_name
   version = "1.35"
