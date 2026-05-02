@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scanner-app
+  namespace: phishing-url-scanner
+spec:
+  template:
+    spec:
+      containers:
+        - name: scanner-app
+          image: wongyx/phishing-url-scanner:${IMAGE_TAG}
+          imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_NAME
