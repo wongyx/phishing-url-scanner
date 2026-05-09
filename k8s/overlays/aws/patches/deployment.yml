@@ -8,9 +8,9 @@ spec:
     spec:
       containers:
         - name: scanner-app
-          image: wongyx/phishing-url-scanner:${IMAGE_TAG}
           imagePullPolicy: Always
           env:
+            - $patch: replace
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
@@ -21,3 +21,38 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: DB_NAME
+            - name: DB_SSLMODE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_SSLMODE
+            - name: APP_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: APP_ENV
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+            - name: VIRUSTOTAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: VIRUSTOTAL_API_KEY
+            - name: SAFE_BROWSING_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SAFE_BROWSING_API_KEY

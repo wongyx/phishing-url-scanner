@@ -6,3 +6,4 @@ metadata:
 data:
   APP_ENV: production
   PORT: "8080"
+  DB_SSLMODE: require
