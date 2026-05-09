@@ -9,3 +9,7 @@ resources:
   - postgres/secret.yml
   - postgres/service.yml
   - postgres/statefulset.yml
+
+images:
+- name: wongyx/phishing-url-scanner
+  newTag: UNSET
