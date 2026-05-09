@@ -18,7 +18,7 @@ func Connect(cfg *config.DB) (*gorm.DB, error) {
 		User:     url.UserPassword(cfg.User, cfg.Password),
 		Host:     cfg.Host + ":5432",
 		Path:     cfg.Name,
-		RawQuery: "sslmode=disable",
+		RawQuery: "sslmode=" + cfg.SSLMode,
 	}).String()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),

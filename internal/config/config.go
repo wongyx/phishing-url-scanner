@@ -31,6 +31,7 @@ type DB struct {
 	Password string
 	Host     string
 	Name     string
+	SSLMode  string
 }
 
 func Load() (*Config, error) {
@@ -54,6 +55,7 @@ func Load() (*Config, error) {
 		Password: requireEnv("DB_PASSWORD", &errs),
 		Host:     getEnv("DB_HOST", "db"),
 		Name:     getEnv("DB_NAME", "phishingchecker"),
+		SSLMode:  getEnv("DB_SSLMODE", "disable"),
 	}
 
 	if len(errs) > 0 {
