@@ -2,15 +2,13 @@
 
 set -e
 
-if [ -z "$1" ]; then
-  echo "Usage: $0 <image-tag>"
-  exit 1
-fi
+cd "$(dirname "$0")/.."
 
-export IMAGE_TAG=$1
+IMAGE_TAG=${1?Usage: minikube-init.sh <image-tag>}
 
 echo "Starting Minikube..."
 minikube start
+kubectl config use-context minikube
 minikube addons enable ingress
 
 echo "Waiting for ingress controller to be ready..."
@@ -23,7 +21,8 @@ echo "Removing stale admission webhook..."
 kubectl delete validatingwebhookconfigurations ingress-nginx-admission --ignore-not-found
 
 echo "Applying Kubernetes manifests..."
-kubectl kustomize k8s/overlays/minikube/ | envsubst | kubectl apply -f -
+(cd k8s/overlays/minikube && kustomize edit set image wongyx/phishing-url-scanner:"$IMAGE_TAG")
+kubectl apply -k k8s/overlays/minikube/
 
 echo "Updating /etc/hosts..."
 sudo sed -i '/myapp.local/d' /etc/hosts

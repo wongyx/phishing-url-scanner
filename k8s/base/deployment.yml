@@ -32,7 +32,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          image: wongyx/phishing-url-scanner:${IMAGE_TAG}
+          image: wongyx/phishing-url-scanner:UNSET
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -47,6 +47,11 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: DB_NAME
+            - name: DB_SSLMODE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_SSLMODE
             - name: APP_ENV
               valueFrom:
                 configMapKeyRef:

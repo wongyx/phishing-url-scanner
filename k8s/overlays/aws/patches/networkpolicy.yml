@@ -12,17 +12,21 @@ spec:
     - Egress
   ingress:
     - from:
-      - podSelector:
-          matchLabels:
-            app: ingress-nginx
-  egress:
-    - to:
       - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: postgres
+          matchLabels:
+            kubernetes.io/metadata.name: kube-system
         podSelector:
           matchLabels:
-            app: postgres
+            app.kubernetes.io/name: aws-load-balancer-controller
+  egress:
+    - to:
+      - ipBlock:
+          cidr: 10.0.3.0/24           # private subnet 1 of VPC
+      - ipBlock:
+          cidr: 10.0.4.0/24           # private subnet 2 of VPC
+      ports:
+        - port: 5432
+          protocol: TCP
     - to:
         - namespaceSelector:
             matchLabels:
@@ -34,4 +38,14 @@ spec:
         - port: 53
           protocol: UDP
         - port: 53
+          protocol: TCP
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - port: 443
           protocol: TCP

@@ -20,6 +20,6 @@ resource "cloudflare_record" "app" {
   name    = "scanner"
   type    = "CNAME"
   content = var.alb_dns_name
-  proxied = true
-  ttl     = 1 # auto TTL when proxied
+  proxied = false
+  ttl     = 60
 }

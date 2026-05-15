@@ -8,3 +8,4 @@ data:
   DB_NAME: phishingchecker
   APP_ENV: development
   PORT: "8080"
+  DB_SSLMODE: disable

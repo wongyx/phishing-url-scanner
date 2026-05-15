@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: phishing-url-scanner
+data:
+  APP_ENV: production
+  PORT: "8080"
+  DB_SSLMODE: require

@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+- cluster-secret-store.yml
+- external-secret.yml
+
+images:
+- name: wongyx/phishing-url-scanner
+  newTag: UNSET
+
+patches:
+- path: patches/ingress.yml
+- path: patches/configmap.yml
+- path: patches/deployment.yml
+- path: patches/networkpolicy.yml
