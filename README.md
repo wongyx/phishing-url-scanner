@@ -4,7 +4,7 @@ An application built in Golang that scans URLs for phishing indicators. It accep
 
 Write-up series documenting my learning journey and decisions made along the way:\
 [Part 1 – Docker & Kubernetes](https://blog.wongyx.com/docker-kubernetes-security-part-1-building-and-securing-a-phishing-url-scanner-locally)
-<!--Part 2 – Deploying on AWS EKS-->
+[Part 2 – Deploying on AWS EKS](https://blog.wongyx.com/docker-kubernetes-security-part-2-taking-the-scanner-to-aws)
 
 ## Tech Stack
 
@@ -12,9 +12,15 @@ Write-up series documenting my learning journey and decisions made along the way
 - **Docker** — Multi-stage builds, Docker Compose for local development
 - **Kubernetes / Minikube** — Local cluster with nginx ingress, HPA, StatefulSet for Postgres
 - **Postgres** — Stores scan results and history
+- **AWS (EKS, RDS, ALB, ACM, Secrets Manager)** — Managed Kubernetes, managed Postgres, ALB ingress with TLS, central secret storage
+- **Terraform** — Provisions all AWS and Cloudflare infrastructure
+- **External Secrets Operator** — Syncs AWS Secrets Manager into k8s Secrets so the app reads env vars unchanged
 
 ## Kubernetes Architecture
 ![Kubernetes Architecture](./images/k8s-architecture.png)
+
+## AWS Architecture
+![AWS Architecture](./images/aws-architecture.png)
 
 ## How It Works
 
@@ -48,3 +54,10 @@ Results are aggregated into a single verdict and stored in Postgres.
 - **Network Policy** — Ingress restricted to the nginx ingress controller; egress restricted to Postgres on port 5432 and DNS on port 53
 - **Service account** — Dedicated service account for the application with `automountServiceAccountToken: false`
 - **Horizontal Pod Autoscaler** — Automatically scales pods based on CPU utilisation
+
+### AWS
+
+- **IRSA (IAM Roles for Service Accounts)** — ALB controller and ESO authenticate to AWS via the EKS OIDC provider; no static credentials mounted in pods
+- **Secrets Manager + ESO** — Application secrets live in AWS Secrets Manager and are synced into a k8s Secret at runtime
+- **Private subnets** — EKS nodes and RDS sit in private subnets with no public IPs; outbound traffic egresses through a single NAT Gateway
+- **Security groups** — RDS only accepts inbound traffic from the EKS node security group on port 5432
